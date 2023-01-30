@@ -5,10 +5,10 @@ This repo contains code for analysing spatial transcriptomic data and applying p
 Modules contain functions for analysing and modelling spatial transcriptomic data.
 Accompanying ipynotebooks demonstrate how to use the modules.
 
-Modules
+### Modules
 'admin_functions.py' - useful administrative functions useful
 
 'cell_decomp_func.py' - module for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling.
 
-Notebooks
+### Notebooks
 'cell_decomp.ipynb' - notebooks for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling.
