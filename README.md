@@ -12,3 +12,5 @@ Accompanying ipynotebooks demonstrate how to use the modules.
 
 ### Notebooks
 'cell_decomp.ipynb' - notebooks for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling.
+
+'gaussian_processes.ipynb' - notebooks for applying gaussian processes to model 2d function of gene expression over space.
