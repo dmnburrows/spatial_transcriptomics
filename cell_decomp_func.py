@@ -210,3 +210,52 @@ class simulate_cell_mix:
         self.mean_exps = mean_exp(self.n_clusts, self.n_genes, self.cell_counts, self.clust_vec)
         print('Created spot mixtures from real data: ' + str(self.n_spots) + ' spots.')
         return(self)
+    
+
+#==============================================================
+def add_noise(spots, per, a_std, g_std, e_std):
+#==============================================================
+
+    """
+    This function adds different types of noise to simulated spots data. 
+    
+    Inputs:
+        spots (np array): y x d array of simulated spot counts, where y = spots, d = genes.
+        per (int): percentage of dropout genes per spot
+        a_std (int): pixel shared gaussian noise - standard deviations 
+        g_std (int): gene shared gaussian noise - standard deviations
+        e_std (int): independent spot and gene noise - standard deviations
+        
+    returns:
+        spots (np array): y x d array of simulated noisy spot counts, where y = spots, d = genes.
+    
+    """
+    import numpy as np
+
+    #Dropout a certain percentage of genes
+    if per!=None:
+        for i in range(spots.shape[0]):
+            rand_ind = np.random.choice(np.arange(spots.shape[1]), size = int((per/100) * spots.shape[1]), replace=False) #random index for selecting
+            spots[i,rand_ind]=0
+    
+    if e_std!=None:
+        #Add random noise and make int and remove negatives
+        spots = spots+np.random.normal(0, e_std, (spots.shape)) ##EXPONENTIAL OR GAUSSIAN?
+
+    if g_std!=None:
+        #gamma - over each gene
+        gamma = np.random.normal(0, g_std, (spots.shape[1])) ##EXPONENTIAL OR GAUSSIAN?
+        gamma_mat = np.asarray([gamma for i in range(spots.shape[0])]) #Repeat across columns for elementwise addition
+        spots = spots+gamma_mat
+
+    if a_std!=None:
+        #alpha - over each spot
+        alpha = np.random.normal(0, a_std, (spots.shape[0])) ##EXPONENTIAL OR GAUSSIAN?
+        alpha_mat = np.asarray([alpha for i in range(spots.shape[1])]).T #Repeat across columns for elementwise addition
+        spots = spots+alpha_mat
+
+    spots = spots.astype(int)  #REMOVE?
+    spots[spots < 0] = 0
+    spots +=1 #remove any zeros
+
+    return(spots)
