@@ -272,7 +272,7 @@ def add_noise(spots, per, a_std, g_std, e_std, noise_type):
     return(spots)
 
 #==============================================================
-def model_stats(idata, prop_vec):
+def model_stats(idata, prop_vec, n_clusts):
 #==============================================================
     mean_post = np.mean(idata.posterior['beta'][0],axis=0)
 
@@ -288,7 +288,7 @@ def model_stats(idata, prop_vec):
 ##########################################################
 ##########################################################
 #MY MODELS
-def basic_pymc(n_clusts, n_spots, n_genes, ref_exp):
+def basic_pymc(n_clusts, n_spots, n_genes, ref_exp, spots):
     #Simple Linear regression
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
@@ -305,7 +305,7 @@ def basic_pymc(n_clusts, n_spots, n_genes, ref_exp):
     return(basic_model)
 
 
-def epsilon_pymc(n_clusts, n_spots, n_genes, ref_exp, noise_type):
+def epsilon_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
                         "genes": np.arange(n_genes),
@@ -326,7 +326,7 @@ def epsilon_pymc(n_clusts, n_spots, n_genes, ref_exp, noise_type):
     return(epsilon_model)
 
 
-def gamma_pymc(n_clusts, n_spots, n_genes, ref_exp, noise_type):
+def gamma_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
     #Poisson noise
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
@@ -348,7 +348,7 @@ def gamma_pymc(n_clusts, n_spots, n_genes, ref_exp, noise_type):
     return(gamma_model)
 
 
-def alpha_pymc(n_clusts, n_spots, n_genes, ref_exp, noise_type):
+def alpha_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
     #Poisson noise
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
