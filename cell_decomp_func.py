@@ -3,7 +3,7 @@ import pymc as pm
 import numpy as np
 
 #====================================
-def sample_rates(n_clusts, n_cells, n_genes, rate_range):
+def sample_rates(n_clusts, n_cells, n_genes, rate_range, rho):
 #====================================
 
     """
@@ -17,6 +17,8 @@ def sample_rates(n_clusts, n_cells, n_genes, rate_range):
         n_cells (int): number of cells
         n_genes (int): number of genes
         rate_range (tuple): min and max of uniform distribution for sampling the rates
+        rho (float): proportion of variance of gene expression across cell types, ratio of Shared:Independent 
+        - 0 = gene expression independent across cell types, 1 = gene expression the same across cell types. 
     
     Outputs:
         cell_rate_mat (np array): n x d array of simulated transcript rates which inputs to Poisson, where n = cells, d = genes. 
@@ -27,7 +29,11 @@ def sample_rates(n_clusts, n_cells, n_genes, rate_range):
 
     #Sample random rates from a uniform distribution for each class and each gene
     rate_mat = np.zeros((n_clusts, n_genes))
-    rate_mat = np.random.uniform(low=rate_range[0], high=rate_range[1], size=(rate_mat.shape)).astype(int)
+
+    #add in shared vs independent variance 
+    ind_rate_mat = ((np.random.uniform(low=rate_range[0], high=rate_range[1], size=(rate_mat.shape)))*(1-rho)).astype(int)
+    shared_rate_mat = ((np.random.uniform(low=rate_range[0], high=rate_range[1], size=(1, rate_mat.shape[1]))*(rho))).astype(int)
+    rate_mat = ind_rate_mat + shared_rate_mat 
     cell_rate_mat = np.repeat(rate_mat, int(n_cells/n_clusts), axis=0) #get the rates for each cell - n cells in each group with same rates
     cell_rate_mat = np.vstack((cell_rate_mat, (np.repeat(np.reshape(cell_rate_mat[-1],(1,cell_rate_mat[-1].shape[0])), n_cells % n_clusts, axis=0)))) #Add any residual cells into the last cluster
     clust_vec = np.repeat(np.arange(0,n_clusts), int(n_cells/n_clusts), axis=0) #vector of cells labelled by their cluster
@@ -169,7 +175,7 @@ class simulate_cell_mix:
 
 
     #====================================
-    def simulate_gene_exp(self, rate_range):
+    def simulate_gene_exp(self, rate_range, rho):
     #====================================
         
         """
@@ -177,11 +183,13 @@ class simulate_cell_mix:
    
         Inputs:
             rate_range (tuple): min and max of uniform distribution for sampling the rates
+            rho (float): proportion of variance of gene expression across cell types, ratio of Shared:Independent 
+        - 0 = gene expression independent across cell types, 1 = gene expression the same across cell types. 
 
     
         """
         #Simulate transcript counts
-        _, self.cell_counts , self.clust_vec = sample_rates(self.n_clusts, self.n_cells, self.n_genes, rate_range)
+        _, self.cell_counts , self.clust_vec = sample_rates(self.n_clusts, self.n_cells, self.n_genes, rate_range, rho)
 
         #Randomly mix into spots
         self.n_spots, self.spots, self.prop_vec = generate_spots(self.n_cells, self.n_clusts, self.cell_counts, self.clust_vec)
@@ -369,3 +377,33 @@ def alpha_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
         #Likelihood of observed data given Poisson rates
         y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
     return(alpha_model)
+
+
+def noise_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
+    #Poisson noise
+    with pm.Model(coords={"celltypes": np.arange(n_clusts),
+                        "spots": np.arange(n_spots),
+                        "genes": np.arange(n_genes),
+                        "1": np.arange(1) }) as noise_model:
+        #Declare data 
+        mean_exp = pm.Data('mean_exp', ref_exp, mutable=False, dims=['celltypes','genes'])
+        # Priors for unknown model parameters
+        beta=pm.HalfNormal("beta", sigma=1, dims=['spots','celltypes']) # celltype proportions
+
+        if noise_type == 'gaussian': 
+            alpha = pm.Normal("alpha",mu=0, sigma=1, dims=['spots','1'])
+            gamma = pm.Normal("gamma", mu=0, sigma=1, dims=['1','genes'])
+            eps=pm.Normal("eps", mu=0, sigma=1, dims=['spots', 'genes'])
+
+        if noise_type == 'exponential': 
+            alpha = pm.Exponential("alpha", lam=1, dims=['spots','1']) # random noise at each spot and gene
+            gamma = pm.Exponential("gamma", lam=1, dims=['1','genes'])
+            eps=pm.Exponential("eps", lam=1, dims=['spots', 'genes'])
+
+        lmd= pm.Deterministic('lmd', np.exp(alpha)*np.exp(gamma)*np.exp(eps)*pm.math.dot(beta, mean_exp), dims=['spots','genes'])
+        #Convert from proportions to counts
+        N_g = pm.Data('N_g', np.sum(spots, 1).reshape(n_spots,1), mutable=False)
+
+        #Likelihood of observed data given Poisson rates
+        y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+    return(noise_model)
