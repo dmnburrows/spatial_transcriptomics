@@ -535,8 +535,6 @@ def timeprint(per, r, numrows, name):
 #====================================
 def eigendecomposition(data):
 #====================================
-    import numpy as np
-
     """
         This function gets the eigenvalues and eigenvectors of a data matrix, where columns = features and rows = samples 
         -> dim reduction is done over the features.
@@ -551,6 +549,9 @@ def eigendecomposition(data):
 
     """
 
+    import numpy as np
+
+
     #Rows = samples, Columns = features, we will do dim red over the features
     zc = (data - np.mean(data,axis=0)) #zero centre across columns 
     scaled = zc/np.std(zc,axis=0) # make SD = 1 across columns
@@ -559,14 +560,12 @@ def eigendecomposition(data):
     D = np.diag(eigenvalues)
     P = eigenvectors
 
-    return(eigenvalues, eigenvectors)
+    return(np.real(eigenvalues), eigenvectors)
 
 
 #====================================
 def pca(data, k):
 #====================================
-    import numpy as np
-
     """
         This function finds a change of basis using n PCs and projects data into this new basis.
    
@@ -578,6 +577,7 @@ def pca(data, k):
         Z (np array): n x p array of original data projected onto top k PCs, with n samples and k principal components
    
     """
+    import numpy as np
 
     #Rows = samples, Columns = features, we will do dim red over the features
     zc = (data - np.mean(data,axis=0)) #zero centre across columns 
@@ -586,7 +586,7 @@ def pca(data, k):
     eigenvalues, eigenvectors = np.linalg.eig(cov) 
     D = np.diag(eigenvalues)
     P = eigenvectors
-    Z = np.dot(cov, P[:,:k]) #projected data with top n components 
+    Z = np.dot(data, P[:,:k]) #projected data with top n components 
 
     return(Z)
 
