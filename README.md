@@ -1,5 +1,5 @@
 # spatial_transcriptomics
-This repo contains code for analysing spatial transcriptomic data and applying probabilistic modelling to understand cell type expression in such data. 
+This repo contains code for analysing spatial transcriptomic data and building probabilistic models to understand cell type expression in such data. 
 
 ## What does this repo contain?
 Modules contain functions for analysing and modelling spatial transcriptomic data.
