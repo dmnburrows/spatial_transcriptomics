@@ -6,7 +6,6 @@ Modules contain functions for analysing and modelling spatial transcriptomic dat
 Accompanying ipynotebooks demonstrate how to use the modules.
 
 ### Modules
-'admin_functions.py' - useful administrative functions useful
 
 'cell_decomp_func.py' - module for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling.
 
