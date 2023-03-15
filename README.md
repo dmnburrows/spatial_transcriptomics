@@ -7,7 +7,7 @@ Accompanying ipynotebooks demonstrate how to use the modules.
 
 ### Modules
 
-'cell_decomp_func.py' - module for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling woith pyMC.
+'cell_decomp_func.py' - module for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling with pyMC.
 
 'simulate-spots-from-10x.R' - R script for simulating spots from pbmc blood cell type datasets, for cell decomposition.
 
