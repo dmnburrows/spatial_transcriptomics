@@ -141,7 +141,7 @@ def mean_exp(n_clusts, n_genes, cell_counts, clust_vec):
         n_clusts (int): number of celltypes
         n_genes (int): number of genes
         cell_counts (np array): k x d array of transcript counts, where k = cells, d = genes. 
-        clust_vec (np array): 1 x n array of cell types for each cell, where n = spots.
+        clust_vec (np array): 1 x n array of cell types for each cell, where n = number of cells.
         
     returns:
         mean_ref (np array): a k x d array of mean expression, where k = cells, d = genes. 
@@ -296,7 +296,7 @@ def model_stats(idata, prop_vec, n_clusts):
 ##########################################################
 ##########################################################
 #MY MODELS
-def basic_pymc(n_clusts, n_spots, n_genes, ref_exp, spots):
+def basic_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type, likelihood):
     #Simple Linear regression
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
@@ -309,11 +309,12 @@ def basic_pymc(n_clusts, n_spots, n_genes, ref_exp, spots):
         #Convert from proportions to counts
         N_g = pm.Data('N_g', np.sum(spots, 1).reshape(n_spots,1), mutable=False)
         #Likelihood of observed data given Poisson rates
-        y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'poisson': y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'negbin': y=pm.NegativeBinomial("y", mu=lmd*N_g,alpha=1, observed=spots)
     return(basic_model)
 
 
-def epsilon_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
+def epsilon_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type, likelihood):
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
                         "genes": np.arange(n_genes),
@@ -330,11 +331,12 @@ def epsilon_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
         N_g = pm.Data('N_g', np.sum(spots, 1).reshape(n_spots,1), mutable=False)
 
         #Likelihood of observed data given Poisson rates
-        y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'poisson': y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'negbin': y=pm.NegativeBinomial("y", mu=lmd*N_g,alpha=1, observed=spots)
     return(epsilon_model)
 
 
-def gamma_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
+def gamma_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type, likelihood):
     #Poisson noise
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
@@ -352,11 +354,12 @@ def gamma_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
         N_g = pm.Data('N_g', np.sum(spots, 1).reshape(n_spots,1), mutable=False)
 
         #Likelihood of observed data given Poisson rates
-        y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'poisson': y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'negbin': y=pm.NegativeBinomial("y", mu=lmd*N_g,alpha=1, observed=spots)
     return(gamma_model)
 
 
-def alpha_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
+def alpha_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type, likelihood):
     #Poisson noise
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
@@ -375,11 +378,12 @@ def alpha_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
         N_g = pm.Data('N_g', np.sum(spots, 1).reshape(n_spots,1), mutable=False)
 
         #Likelihood of observed data given Poisson rates
-        y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'poisson': y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'negbin': y=pm.NegativeBinomial("y", mu=lmd*N_g,alpha=1, observed=spots)
     return(alpha_model)
 
 
-def noise_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
+def noise_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type, likelihood):
     #Poisson noise
     with pm.Model(coords={"celltypes": np.arange(n_clusts),
                         "spots": np.arange(n_spots),
@@ -405,5 +409,6 @@ def noise_pymc(n_clusts, n_spots, n_genes, ref_exp, spots, noise_type):
         N_g = pm.Data('N_g', np.sum(spots, 1).reshape(n_spots,1), mutable=False)
 
         #Likelihood of observed data given Poisson rates
-        y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'poisson': y=pm.Poisson("y", mu=lmd*N_g, observed=spots)
+        if likelihood == 'negbin': y=pm.NegativeBinomial("y", mu=lmd*N_g,alpha=1, observed=spots)
     return(noise_model)
