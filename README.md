@@ -11,7 +11,9 @@
 - Accompanying ipynotebooks demonstrate how to use the modules.
 
 ### Modules
-'cell_decomp_func.py' - module for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling with pyMC.
+'spot_simulate.py' - module for simulating spot data (e.g. Visium, slideseq etc) - mixtures of cell type gene expression at a given spot. 
+
+'cell_decomp.py' - module for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling with pyMC.
 
 'simulate-spots_10x.R' - R script for simulating spots from pbmc blood cell type datasets, for cell decomposition.
 
@@ -19,5 +21,8 @@
 'cell_decomp.ipynb' - notebooks for inferring proportions of cell types from mixed spatial transcriptomic datasets via probabilistic modelling.
 
 'gaussian_processes.ipynb' - notebooks for applying gaussian processes to model 2d function of gene expression over space.
+
+'plaque_DE.ipynb' - notebook for doing differential expression across regions with alzheimers plaques vs no plaques. 
+
 
 
