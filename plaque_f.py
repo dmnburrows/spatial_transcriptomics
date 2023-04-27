@@ -68,7 +68,7 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0,
 
     #Put gene data into dict
     #preprocess genes
-    scanpy.pp.filter_genes(gene_, min_cells=min_cell_per_gene)
+    #scanpy.pp.filter_genes(gene_, min_cells=min_cell_per_gene)
     scanpy.pp.normalize_total(gene_, target_sum=norm_factor)
     cell_n = gene_.obs.index[keepcell_ind]
     gene_m = gene_.X.toarray()[keepcell_ind,:]
