@@ -87,3 +87,19 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0,
     assert sum([gene_df.index[i] !=UMI[i]for i in range(len(UMI))])==0
 
     return(spot_df, gene_df)
+
+
+
+#========================================
+def report_class_acc(true, pred):
+#========================================
+
+    """
+    This function reports the accuracy of a classifier for each class.
+    Input: true = true labels, pred = predicted labels
+    """
+
+    non_plq = sum(true[np.where(true==0)] == pred[np.where(true==0)]) / sum(true==0)
+    plq = sum(true[np.where(true==1)] == pred[np.where(true==1)]) / sum(true==1)
+    print('Non-plaque accuracy = ' + str(np.round(non_plq,3)) + ' , ' + str(int(non_plq*sum(true==0))) + ' of ' + str(sum(true==0)))
+    print('Plaque accuracy = ' + str(np.round(plq,2)) + ' , ' + str(int(plq*sum(true==1))) + ' of ' + str(sum(true==1)))
