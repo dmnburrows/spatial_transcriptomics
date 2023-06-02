@@ -66,7 +66,7 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0)
     #Put spot metadata into dict
     d={}
     for n,k in enumerate(coord_df.keys()): d.update({k: coord_l[:,n]})
-    d.update({'plaque': plq_bool.astype(int), 'cluster': meta_filt['cluster'], 'anot': meta_filt['anot']})
+    d.update({'plaque': plq_bool.astype(int), 'cluster': meta_filt['cluster']})
     spot_df = pd.DataFrame(data=d)
 
     #Put gene data into dict
