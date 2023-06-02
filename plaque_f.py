@@ -1,4 +1,8 @@
-def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0, norm_factor=1e6):
+import numpy as np
+#==================================================================================================
+def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0):
+#==================================================================================================
+
     """
     This function loads plaque data, gene expression data and cluster labels.
 
@@ -18,7 +22,6 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0,
     """
     import scanpy
     import json
-    import numpy as np
     import pandas as pd
 
     # load seurat data
@@ -69,7 +72,7 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0,
     #Put gene data into dict
     #preprocess genes
     #scanpy.pp.filter_genes(gene_, min_cells=min_cell_per_gene)
-    scanpy.pp.normalize_total(gene_, target_sum=norm_factor)
+    #scanpy.pp.normalize_total(gene_, target_sum=norm_factor)
     cell_n = gene_.obs.index[keepcell_ind]
     gene_m = gene_.X.toarray()[keepcell_ind,:]
     gene_n = gene_.var_names
@@ -90,16 +93,56 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0,
 
 
 
+
 #========================================
-def report_class_acc(true, pred):
+def report_metrics(true, pred, pred_prob):
 #========================================
 
     """
     This function reports the accuracy of a classifier for each class.
     Input: true = true labels, pred = predicted labels
     """
+    import sklearn.metrics as metrics
 
+    acc = sum(true == pred)/len(true)
+    print('TOTAL ACCURACY (#correct predictions/#total predictions) = ' + str(np.round(acc,3)) + ' , ' + str(int(acc*len(true))) + ' of ' + str(len(true)))
     non_plq = sum(true[np.where(true==0)] == pred[np.where(true==0)]) / sum(true==0)
     plq = sum(true[np.where(true==1)] == pred[np.where(true==1)]) / sum(true==1)
-    print('Non-plaque accuracy = ' + str(np.round(non_plq,3)) + ' , ' + str(int(non_plq*sum(true==0))) + ' of ' + str(sum(true==0)))
-    print('Plaque accuracy = ' + str(np.round(plq,2)) + ' , ' + str(int(plq*sum(true==1))) + ' of ' + str(sum(true==1)))
+    print('ACCURACY (#correct predictions/#total predictions) non-plaque = ' + str(np.round(non_plq,3)) + ' , ' + str(int(non_plq*sum(true==0))) + ' of ' + str(sum(true==0)))
+    print('ACCURACY (#correct predictions/#total predictions) plaque = ' + str(np.round(plq,2)) + ' , ' + str(int(plq*sum(true==1))) + ' of ' + str(sum(true==1)))
+
+    prec_no, prec_plq = metrics.precision_score(true, pred, average=None)
+    print('PRECISION (TP/TP+FP) non-plaque = ' + str(np.round(prec_no,3)))
+    print('PRECISION (TP/TP+FP) plaque= ' + str(np.round(prec_plq,3)))
+
+    rec_no, rec_plq = metrics.recall_score(true, pred, average=None)
+    print('RECALL (TP/TP+FN) Non-plaque = ' + str(np.round(rec_no,3)))
+    print('RECALL (TP/TP+FN) plaque = ' + str(np.round(rec_plq,3)))
+
+    f1_no, f1_plq = metrics.f1_score(true, pred, average=None)
+    print('F1 SCORE(2*(PR/P+R)) non-plaque = ' + str(np.round(f1_no,3)))
+    print('F1 SCORE (2*(PR/P+R)) plaque = ' + str(np.round(f1_plq,3)))
+
+    #true positive rate
+    print('TRUE POSITIVE RATE (TP/TP+FN) non-plaque = ' + str(np.round(rec_no,3)))
+    print('TRUE POSITIVE RATE (TP/TP+FN) plaque = ' + str(np.round(rec_plq,3)))
+
+    #false positive rate
+    nplq_fpr = sum(true[np.where(pred == 0)]) / (sum(true[np.where(pred == 0)]) + sum(true[np.where(pred == 1)]))
+    print('FALSE POSITIVE RATE (FP/FP+TN) non-plaque  = ' + str(np.round(nplq_fpr,3)))
+    plq_fpr = sum(true[np.where(pred == 1)] !=1) / (sum(true[np.where(pred == 1)] !=1) + sum(true[np.where(pred==0)] == 0))
+    print('FALSE POSITIVE RATE (FP/FP+TN) plaque = ' + str(np.round(plq_fpr,3)))
+
+    #roc auc noplq
+    fpr, tpr, thresholds = metrics.roc_curve(true, pred_prob[:,0], pos_label=0)
+    roc_auc = metrics.auc(fpr, tpr)
+    print('ROC AUC non-plaque = ' + str(np.round(roc_auc,3)))
+
+    #roc auc plq
+    fpr, tpr, thresholds = metrics.roc_curve(true, pred_prob[:,1], pos_label=1)
+    roc_auc = metrics.auc(fpr, tpr)
+    print('ROC AUC plaque = ' + str(np.round(roc_auc,3)))
+
+
+
+
