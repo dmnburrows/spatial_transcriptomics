@@ -1,4 +1,6 @@
 import numpy as np
+from collections import defaultdict
+
 #==================================================================================================
 def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0):
 #==================================================================================================
@@ -143,6 +145,87 @@ def report_metrics(true, pred, pred_prob):
     roc_auc = metrics.auc(fpr, tpr)
     print('ROC AUC plaque = ' + str(np.round(roc_auc,3)))
 
+    
+    
+#==================================================================================================
+class Graph():
+#==================================================================================================
+    """
+    This class builds a symmetric graph object with nodes, edges and edge weights.
+    
+    """
+    
+    def __init__(self):
+        """
+        self.edges is a dict of all possible next nodes
+        e.g. {'X': ['A', 'B', 'C', 'E'], ...}
+        self.weights has all the weights between two nodes,
+        with the two nodes as a tuple as the key
+        e.g. {('X', 'A'): 7, ('X', 'B'): 2, ...}
+        """
+        self.edges = defaultdict(list)
+        self.weights = {}
+
+    
+    def add_edge(self, from_node, to_node, weight):
+        # Note: assumes edges are bi-directional
+        self.edges[from_node].append(to_node)
+        self.edges[to_node].append(from_node)
+        self.weights[(from_node, to_node)] = weight
+        self.weights[(to_node, from_node)] = weight
+        
+        
+        
+#==================================================================================================
+def dijsktra(graph, initial, end):
+#==================================================================================================
+    """
+    This function uses the dijsktra method to find the shortest path lengths between two points.
+    
+    Input:
+        graph (Graph object): Graph object of Graph class 
+        initial (str): name of starting node
+        end (str) : name of end node
+        
+    Output:
+        path (list): list of nodes 
+    """
+
+    # shortest paths is a dict of nodes
+    # whose value is a tuple of (previous node, weight)
+    shortest_paths = {initial: (None, 0)}
+    current_node = initial
+    visited = set()
+    
+    while current_node != end:
+        visited.add(current_node)
+        destinations = graph.edges[current_node]
+        weight_to_current_node = shortest_paths[current_node][1]
+
+        for next_node in destinations:
+            weight = graph.weights[(current_node, next_node)] + weight_to_current_node
+            if next_node not in shortest_paths:
+                shortest_paths[next_node] = (current_node, weight)
+            else:
+                current_shortest_weight = shortest_paths[next_node][1]
+                if current_shortest_weight > weight:
+                    shortest_paths[next_node] = (current_node, weight)
+        
+        next_destinations = {node: shortest_paths[node] for node in shortest_paths if node not in visited}
+        if not next_destinations:
+            return "Route Not Possible"
+        # next node is the destination with the lowest weight
+        current_node = min(next_destinations, key=lambda k: next_destinations[k][1])
+    
+    # Work back through destinations in shortest path
+    path = []
+    while current_node is not None:
+        path.append(current_node)
+        next_node = shortest_paths[current_node][0]
+        current_node = next_node
+    # Reverse path
+    path = path[::-1]
+    return path
 
 
 
