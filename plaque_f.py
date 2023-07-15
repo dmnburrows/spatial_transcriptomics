@@ -93,7 +93,32 @@ def sort_data(data_path, coord_path, genes_path, meta_filt, min_cell_per_gene=0)
 
     return(spot_df, gene_df)
 
+#==================================================================================================
+def dist_nearest_plaq(df):
+#==================================================================================================
+    """
+    This function calculates the distance of each spot to the nearest plaque.
+    Inputs:
+        df: dataframe with spot coordinates and plaque coordinates
+    Outputs:
+        df: dataframe with spot coordinates, plaque coordinates, and distance to nearest plaque
+    
+    """
 
+    #Find cortex plaque coords
+    plq_pos = df[df['plaque']==1]['pxl_row_in_fullres'].values,df[df['plaque']==1]['pxl_col_in_fullres'].values
+    plq_pos = np.asarray(plq_pos).T
+
+    #Loop through each spot and find the nearest plaque
+    #Convert into um distances!!!!
+    dist_v = []
+    for c in range(len(df)):
+        spot = df.iloc[c]['pxl_row_in_fullres'], df.iloc[c]['pxl_col_in_fullres']
+        dist = np.sqrt(((spot[0]-plq_pos[:,0])**2 +(spot[1]-plq_pos[:,1])**2).astype(float))
+        dist_v = np.append(dist_v,np.min(dist))
+        dist_v = np.asarray(dist_v)
+    df['dist_nearest_plaq'] = dist_v
+    return(df)
 
 
 #========================================
