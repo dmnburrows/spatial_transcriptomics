@@ -8,12 +8,12 @@ cnts <- read.csv("old-APP-cortex_plqdist_counts.csv", header=TRUE, check.names=F
 
 dds <-DESeqDataSetFromMatrix(countData=cnts, 
                        colData=coldata, 
-                       design=~sample+plaque) 
+                       design=~sample+dist_nearest_plaq) 
 
 dds <- DESeq(dds)
-res <- results(dds, alpha=0.1)
+res <- results(dds, alpha=0.1,  name="dist_nearest_plaq")
 write.csv(as.data.frame(res), 
-          file="old-app-cortex-plaque_DESEQ-pval.csv")
+          file="old-APP-cortex_plqdist_DESEQ-pval.csv")
 
 
 
