@@ -11,15 +11,9 @@ dds <-DESeqDataSetFromMatrix(countData=cnts,
                        design=~sample+dist_nearest_plaq) 
 
 dds <- DESeq(dds)
-res <- results(dds, alpha=0.1,  name="dist_nearest_plaq")
+res <- results(dds, alpha=0.01,name="dist_nearest_plaq")
 write.csv(as.data.frame(res), 
-          file="old-APP-cortex_plqdist_DESEQ-pval.csv")
-
-
-
-
-
-
+          file="old-APP-cortex_plqdist_DESEQ-pval-alpha-01.csv")
 
 
 
