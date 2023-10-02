@@ -22,8 +22,8 @@ sum_zlmint <- summary(zlmint, logFC=TRUE, doLRT='dist_nearest_plaq')
 write.csv(sum_zlmint$datatable, file="old-APP-cortex_plqdist_MAST-LRT_sample-intercept_reduced.csv")
 
 #random intercept and slope for sample, fixed for dist
-zlmint_slope <- zlm(~dist_nearest_plaq + (1+dist_nearest_plaq|sample), sca = plq_filtered, method = 'glmer', ebayes = F, strictConvergence=F, fitArgsD = list(nAGQ = 0))
-sum_zlmint_slope <- summary(zlmint_slope, logFC=TRUE, doLRT='dist_nearest_plaq') 
-write.csv(sum_zlmint_slope$datatable, file="old-APP-cortex_plqdist_MAST-LRT_sample-slopeintercept_reduced.csv")
+# zlmint_slope <- zlm(~dist_nearest_plaq + (1+dist_nearest_plaq|sample), sca = plq_filtered, method = 'glmer', ebayes = F, strictConvergence=F, fitArgsD = list(nAGQ = 0))
+# sum_zlmint_slope <- summary(zlmint_slope, logFC=TRUE, doLRT='dist_nearest_plaq') 
+# write.csv(sum_zlmint_slope$datatable, file="old-APP-cortex_plqdist_MAST-LRT_sample-slopeintercept_reduced.csv")
 
 
