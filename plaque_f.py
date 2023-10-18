@@ -292,3 +292,24 @@ def report_metrics(true, pred, pred_prob):
     fpr, tpr, thresholds = metrics.roc_curve(true, pred_prob[:,1], pos_label=1)
     roc_auc = metrics.auc(fpr, tpr)
     print('ROC AUC plaque = ' + str(np.round(roc_auc,3)))
+
+
+#=======================
+def extract_p(de_genes, data_type):
+#=======================
+    """
+    This function extracts p values from mast de_genes matrix for continuous or discrete components
+
+    Inputs:
+        de_genes (dataframe): mast dictionary of de_genes
+        data_type (str): C for continuous or D for discrete
+    Returns:
+        p_mat (dataframe): dataframe with p values for each gene 
+    """
+
+    p_mat = de_genes[de_genes['component'] == data_type]
+    p_mat = p_mat[p_mat['contrast'] == 'adj_plq']
+    p_mat['Pr(>Chisq)'] = p_mat['Pr(>Chisq)'].fillna(1)
+    p_mat['p_val'] = p_mat['Pr(>Chisq)']
+    return(p_mat)
+
