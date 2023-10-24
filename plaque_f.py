@@ -270,8 +270,8 @@ def report_metrics(true, pred, pred_prob):
     print('RECALL (TP/TP+FN) plaque = ' + str(np.round(rec_plq,3)))
 
     f1_no, f1_plq = metrics.f1_score(true, pred, average=None)
-    print('F1 SCORE(2*(PR/P+R)) non-plaque = ' + str(np.round(f1_no,3)))
-    print('F1 SCORE (2*(PR/P+R)) plaque = ' + str(np.round(f1_plq,3)))
+    print('F1 SCORE (2*(Pre/Pre+Rec)) non-plaque = ' + str(np.round(f1_no,3)))
+    print('F1 SCORE (2*(Pre/Pre+Rec)) plaque = ' + str(np.round(f1_plq,3)))
 
     #true positive rate
     print('TRUE POSITIVE RATE (TP/TP+FN) non-plaque = ' + str(np.round(rec_no,3)))
