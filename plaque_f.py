@@ -258,8 +258,8 @@ def report_metrics(true, pred, pred_prob):
     print('TOTAL ACCURACY (#correct predictions/#total predictions) = ' + str(np.round(acc,3)) + ' , ' + str(int(acc*len(true))) + ' of ' + str(len(true)))
     non_plq = sum(true[np.where(true==0)] == pred[np.where(true==0)]) / sum(true==0)
     plq = sum(true[np.where(true==1)] == pred[np.where(true==1)]) / sum(true==1)
-    print('ACCURACY (#correct predictions/#total predictions) non-plaque = ' + str(np.round(non_plq,3)) + ' , ' + str(int(non_plq*sum(true==0))) + ' of ' + str(sum(true==0)))
-    print('ACCURACY (#correct predictions/#total predictions) plaque = ' + str(np.round(plq,2)) + ' , ' + str(int(plq*sum(true==1))) + ' of ' + str(sum(true==1)))
+    print('ACCURACY (#correct predictions/#total true non-plaque) non-plaque = ' + str(np.round(non_plq,3)) + ' , ' + str(int(non_plq*sum(true==0))) + ' of ' + str(sum(true==0)))
+    print('ACCURACY (#correct predictions/#total true plaque) plaque = ' + str(np.round(plq,2)) + ' , ' + str(int(plq*sum(true==1))) + ' of ' + str(sum(true==1)))
 
     prec_no, prec_plq = metrics.precision_score(true, pred, average=None)
     print('PRECISION (TP/TP+FP) non-plaque = ' + str(np.round(prec_no,3)))
