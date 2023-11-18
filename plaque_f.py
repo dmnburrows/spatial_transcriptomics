@@ -314,5 +314,49 @@ def report_metrics(true, pred, pred_prob):
     roc_auc = metrics.auc(fpr, tpr)
     print('ROC AUC plaque = ' + str(np.round(roc_auc,3)))
 
+    
+#======================================
+def model_cvs(model, X, y, cv):
+#======================================
+    """
+    This function computes model cross validation scores across range of metrics.
+    
+    Inputs:
+        model (object): sklearn model object to fit
+        X (np array): training data
+        y (np array): training data labels
+        cv (int): number of folds
+    
+    """
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import train_test_split
+    import sklearn.metrics
+    from sklearn.model_selection import cross_val_score
+    
+    #NB default pos_label is 1
+    scores = cross_val_score(model, X, y, cv=cv, scoring='accuracy')
+    print("Accuracy (#correct predictions/#total predictions): %0.3f (+/- %0.3f)" % (scores.mean(), scores.std()))
+    print(scores)
+    
+    scores = cross_val_score(model, X, y, cv=cv, scoring='precision')
+    print("Plaque precision (TP/TP+FP): %0.3f (+/- %0.3f)" % (scores.mean(), scores.std()))
+    print(scores)
+    
+    scores = cross_val_score(model, X, y, cv=cv, scoring='recall')
+    print("Plaque recall (TP/TP+FN): %0.3f (+/- %0.3f)" % (scores.mean(), scores.std()))
+    print(scores)
+    
+    scores = cross_val_score(model, X, y, cv=cv, scoring='f1')
+    print("Plaque f1 (2*(Pre/Pre+Rec)): %0.3f (+/- %0.3f)" % (scores.mean(), scores.std()))
+    print(scores)
+
+
+    scores = cross_val_score(model, X, y, cv=cv, scoring='roc_auc')
+    print("ROC AUC: %0.3f (+/- %0.3f)" % (scores.mean(), scores.std()))
+    print(scores)
+
+    
+    
+          
 
 
