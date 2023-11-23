@@ -263,6 +263,28 @@ def extract_p(de_genes, data_type):
     p_mat['p_val'] = p_mat['Pr(>Chisq)']
     return(p_mat)
 
+#=====================================
+def filter_by_genes(n, mode, de_genes, logcpm):
+#=====================================
+    """
+    This function filters a gene matrix by defined gene list.
+    
+    Inputs:
+        n (int): number of de genes
+        mode (str): rank by MAST coefficients for continuous (C) or discrete (D)
+        de_genes (dataframe): MAST gene output
+        logcpm (dataframe): gene expression matrix
+    
+    Outputs:
+
+    """
+    
+    #Find top n DE genes
+    de_dict = {'C': extract_p(de_genes, 'C'), 'D': extract_p(de_genes,'D')}
+    top_de = de_dict[mode].sort_values(by='p_val', ascending=True).head(n)
+    #Filter CPMmat with DE genes
+    sub_gm = logcpm.loc[top_de['primerid']].T
+    return(sub_gm)
 
 
 #========================================
